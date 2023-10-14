@@ -1,8 +1,11 @@
 import React from 'react'
 import { BiColorFill } from 'react-icons/bi';
 import { AiOutlineClear } from 'react-icons/ai';
+import { BiText } from 'react-icons/bi';
 
-function Header({ handleCanvasClear, handleFillCanvas, color, lineWidth, handleLineWidthChange }) {
+function Header({ handleCanvasClear, handleFillCanvas, color, lineWidth, handleLineWidthChange, openCustomTextDialog }) {
+
+
     return (
         <div>
             <nav className="bg-white dark:bg-gray-900 border border-black">
@@ -56,9 +59,9 @@ function Header({ handleCanvasClear, handleFillCanvas, color, lineWidth, handleL
                                     onChange={(e) => handleLineWidthChange(e)}
                                     className="block py-2 pl-3 pr-4 text-gray-900 rounded-md md:p-0 dark:text-white"
                                 >
-                                    <option value={3}>3px</option>
                                     <option value={5}>5px</option>
-                                    <option value={8}>8px</option>
+                                    <option value={7}>7px</option>
+                                    <option value={9}>9px</option>
                                 </select>
                                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                                     <svg
@@ -69,6 +72,15 @@ function Header({ handleCanvasClear, handleFillCanvas, color, lineWidth, handleL
                                     >
                                     </svg>
                                 </div>
+                            </li>
+
+                            <li>
+                                <button
+                                    onClick={openCustomTextDialog}
+                                    className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent cursor"
+                                >
+                                    <BiText size={25} />
+                                </button>
                             </li>
                         </ul>
                     </div>

@@ -1,15 +1,15 @@
 /**
  * Draw a line on a canvas.
- * @param {Object} props - The drawing properties.
- * @param {CanvasRenderingContext2D} props.ctx - The canvas rendering context.
- * @param {string} props.color - The color of the line.
- * @param {Point} props.currentPoint - The current point.
- * @param {Point | null} props.prevPoint - The previous point, or null.
+ * @param {Object} props
+ * @param {CanvasRenderingContext2D} props.ctx
+ * @param {string} props.color
+ * @param {Point} props.currentPoint
+ * @param {Point | null} props.prevPoint
+ * @param {number} props.lineWidth
  */
-export const drawLine = ({ prevPoint, currentPoint, ctx, color }) => {
+export const drawLine = ({ prevPoint, currentPoint, ctx, color, lineWidth }) => {
     const { x: currX, y: currY } = currentPoint;
     const lineColor = color;
-    const lineWidth = 5;
 
     let startPoint = prevPoint ?? currentPoint;
     ctx.beginPath();

@@ -7,12 +7,13 @@ import { drawLine } from '../services/drawLine';
 import ColorPicker from './ColorPicker';
 import Canvas from './Canvas';
 import Header from './Header';
+import Swal from 'sweetalert2';
 
 const socket = io('http://localhost:3001');
 
 const DrawComponent = () => {
     const [color, setColor] = useState('#000');
-    const { canvasRef, onMouseDown, clear, fillCanvas } = useDraw(createLine);
+    const { canvasRef, onMouseDown, clear, fillCanvas, drawText } = useDraw(createLine);
     const [lineWidth, setLineWidth] = useState(5);
     const [fillColorMode, setFillColorMode] = useState(false);
 
@@ -42,14 +43,21 @@ const DrawComponent = () => {
 
         socket.on('draw-line', ({ prevPoint, currentPoint, color }) => {
             if (!ctx) return console.log('no ctx here');
-            drawLine({ prevPoint, currentPoint, ctx, color });
+            drawLine({ prevPoint, currentPoint, ctx, color, lineWidth });
         });
 
         socket.on('clear', clear);
 
         socket.on('fill-color', (receivedColor) => {
-            console.log('Received color from server:', receivedColor);
             fillCanvas(receivedColor);
+        });
+
+        socket.on('size-changed', (lineWidth) => {
+            setLineWidth(lineWidth);
+        });
+
+        socket.on('draw-text', ({ text, font, color, x, y }) => {
+            drawText(text, font, color, x, y);
         });
 
         return () => {
@@ -63,8 +71,32 @@ const DrawComponent = () => {
 
     function createLine({ prevPoint, currentPoint, ctx }) {
         socket.emit('draw-line', { prevPoint, currentPoint, color });
-        drawLine({ prevPoint, currentPoint, ctx, color });
+        drawLine({ prevPoint, currentPoint, ctx, color, lineWidth });
     }
+
+    // if (typeof document !== 'undefined') {
+    //     if (fillColorMode) {
+    //         document.body.style.cursor = `url('${cursorIcon}'), auto`;
+    //     } else {
+    //         document.body.style.cursor = 'auto';
+    //     }
+    // }
+
+    const handleCanvasClear = () => {
+        if (typeof document !== 'undefined') {
+            document.body.style.cursor = 'auto';
+        }
+        // setFillColorMode(false);
+        socket.emit('clear');
+        clear();
+    };
+
+    const handleLineWidthChange = (e) => {
+        const newValue = parseInt(e.target.value);
+        console.log(newValue);
+        setLineWidth(newValue);
+        socket.emit('change-size', newValue);
+    };
 
     const handleFillCanvas = (color) => {
         console.log('Filling canvas with color:', color);
@@ -72,46 +104,74 @@ const DrawComponent = () => {
         socket.emit('fill-color', color);
     };
 
-    if (typeof document !== 'undefined') {
-        // if (fillColorMode) {
-        // document.body.style.cursor = `url('${cursorIcon}'), auto`;
-        // } else {
-        //   document.body.style.cursor = 'auto';
-        // }
-    }
-
-    const handleCanvasClear = () => {
-        if (typeof document !== 'undefined') {
-            document.body.style.cursor = 'auto';
-        }
-        setFillColorMode(false);
-        socket.emit('clear');
-        clear();
-    };
-
-    const handleLineWidthChange = (e) => {
-        setLineWidth(parseInt(e.target.value));
-    };
-
     const handleCanvasMouseDown = () => {
         if (fillColorMode) {
-            // fillCanvas(color);
+            fillCanvas(color);
             setFillColorMode(false);
         } else {
             onMouseDown();
         }
     };
 
+    const openCustomTextDialog = () => {
+        Swal.fire({
+            title: 'Customize Text',
+            html: `
+            <input type="text" id="text" placeholder="Enter text" class="swal2-input">
+            <input type="color" id="color" class="swal2-input" value="#000000">
+            <input type="range" id="fontSize" step="2" value="20" class="swal2-input">
+            <select id="font" class="swal2-select">
+              <option value="Arial">Arial</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Times New Roman">Times New Roman</option>
+            </select>
+            <input type="number" id="x" placeholder="X-coordinate" class="swal2-input">
+            <input type="number" id="y" placeholder="Y-coordinate" class="swal2-input">
+          `,
+            showCancelButton: true,
+            confirmButtonText: 'Add Text',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const inputText = document.getElementById('text').value;
+                const color = document.getElementById('color').value;
+                const fontSize = document.getElementById('fontSize').value;
+                const font = document.getElementById('font').value;
+                let x = parseFloat(document.getElementById('x').value);
+                let y = parseFloat(document.getElementById('y').value);
+
+                if (isNaN(x)) x = 50;
+                if (isNaN(y)) y = 50;
+
+                addTextToCanvas(inputText, x, y, color, fontSize, font);
+            }
+        });
+    };
+
+    const addTextToCanvas = (text, x, y, color, fontSize, font) => {
+        const fontStyle = `${fontSize}px ${font}`;
+
+        drawText(text, fontStyle, color, x, y);
+        socket.emit('draw-text', { text, fontStyle, color, x, y });
+    };
+
     return (
         <div>
-            <Header handleCanvasClear={handleCanvasClear} handleFillCanvas={handleFillCanvas}
-                color={color} lineWidth={lineWidth} handleLineWidthChange={handleLineWidthChange} />
+            <Header
+                handleCanvasClear={handleCanvasClear}
+                handleFillCanvas={handleFillCanvas}
+                color={color}
+                lineWidth={lineWidth}
+                handleLineWidthChange={handleLineWidthChange}
+                openCustomTextDialog={openCustomTextDialog}
+            />
 
             <div className="mt-5 flex items-center">
                 <Canvas canvasRef={canvasRef} handleCanvasMouseDown={handleCanvasMouseDown} />
 
                 <ColorPicker color={color} setColor={setColor} />
             </div>
+
+            {/* <button onClick={openCustomTextDialog}>Add Text</button> */}
         </div>
     );
 };

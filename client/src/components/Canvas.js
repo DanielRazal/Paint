@@ -9,6 +9,7 @@ function Canvas({ canvasRef, handleCanvasMouseDown }) {
                 width={1000}
                 height={500}
                 className="border border-black rounded-md"
+                
             />
         </div>
     )
