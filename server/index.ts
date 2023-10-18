@@ -24,7 +24,6 @@ io.on('connection', (socket) => {
   })
 
   socket.on('canvas-state', (state) => {
-    console.log('received canvas state')
     socket.broadcast.emit('canvas-state-from-server', state)
   })
 
@@ -34,9 +33,18 @@ io.on('connection', (socket) => {
 
   socket.on('clear', () => io.emit('clear'))
 
-  socket.on('fill-color', (color) => {
+  socket.on('fill-color', (color: string) => {
     socket.broadcast.emit('fill-color', color);
   });
+
+  socket.on('change-size', (lineWidth: number) => {
+    socket.broadcast.emit('size-changed', lineWidth);
+  });
+
+  socket.on('draw-text', ({ text, font, color, x, y }) => {
+    socket.broadcast.emit('draw-text', { text, font, color, x, y });
+  });
+
 })
 
 server.listen(3001, () => {

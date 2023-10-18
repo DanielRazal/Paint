@@ -21,31 +21,16 @@ export const useDraw = (onDraw) => {
   const fillCanvas = (color) => {
     const canvas = canvasRef.current;
     if (!canvas) {
-      console.log('Canvas element is null or undefined');
       return;
     }
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      console.log('2D rendering context is null or undefined');
       return;
     }
 
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    console.log('Canvas filled with color:', color);
-  };
-
-  const drawText = (text, font, color, x = 50, y = 50) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.font = font || '12px Arial';
-    ctx.fillStyle = color || 'black';
-    ctx.fillText(text, x, y);
   };
 
   useEffect(() => {
@@ -87,5 +72,5 @@ export const useDraw = (onDraw) => {
     };
   }, [onDraw]);
 
-  return { canvasRef, onMouseDown, clear, fillCanvas, drawText };
+  return { canvasRef, onMouseDown, clear, fillCanvas };
 };
