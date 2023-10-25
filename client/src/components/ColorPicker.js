@@ -4,11 +4,13 @@ import { ChromePicker } from 'react-color';
 const ColorPicker = ({ color, setColor }) => {
 
     return (
-        <ChromePicker
-            className="ml-10"
-            color={color}
-            onChange={(e) => setColor(e.hex)}
-        />
+        <div>
+            <ChromePicker
+                className="ml-10"
+                color={color}
+                onChange={(e) => setColor(e.hex)}
+            />
+        </div>
     );
 };
 

@@ -103,7 +103,6 @@ const DrawComponent = () => {
 
             <div className="mt-5 flex items-center">
                 <Canvas canvasRef={canvasRef} handleCanvasMouseDown={handleCanvasMouseDown} />
-
                 <ColorPicker color={color} setColor={setColor} />
             </div>
         </div>
