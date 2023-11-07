@@ -1,7 +1,7 @@
 # Paint
 
 Developed using **React, NodeJs**.\
-**"Paint"** is a collaborative painting application with a canvas.
+**"Paint"** is a collaborative painting application with a canvas.\
  Users can draw on the canvas and, thanks to a web socket feature, see the real-time contributions of others.
 
 ## Running the Project
